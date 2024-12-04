@@ -23,7 +23,8 @@ indexmap = "2.2.6"
 [dependencies.serenity]
 default-features = false
 features = ["builder", "gateway", "model", "utils", "collector", "framework"]
-git = "https://github.com/serenity-rs/serenity"
+# git = "https://github.com/serenity-rs/serenity"
+git = "https://github.com/CycleFive/serenity"
 branch = "next"
 
 [dev-dependencies]
@@ -54,3 +55,6 @@ unexpected_cfgs = { level = "warn", check-cfg = ["cfg(doc_nightly)"] }
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = ["--cfg", "doc_nightly"]
+
+[patch.crates-io]
+serenity = { git = "https://github.com/CycleFive/serenity", branch = "next" }
