@@ -18,19 +18,19 @@ tracing = { version = "0.1.40", features = ["log"] } # warning about weird state
 derivative = "2.2.0"
 parking_lot = "0.12.1"
 trim-in-place = "0.1.7"
-indexmap = "2.2.6"
+indexmap = "2.7.1"
 
 [dependencies.serenity]
 default-features = false
 features = ["builder", "gateway", "model", "utils", "collector", "framework"]
-git = "https://github.com/serenity-rs/serenity"
+git = "https://github.com/CycleFive/serenity"
 branch = "next"
 
 [dev-dependencies]
 # For the examples
 tokio = { version = "1.25.1", features = ["rt-multi-thread"] }
 futures = { version = "0.3.13", default-features = false }
-env_logger = "0.10.1"
+env_logger = "0.11.6"
 fluent = "0.16.0"
 intl-memoizer = "0.5.1"
 fluent-syntax = "0.11"

@@ -211,7 +211,7 @@ async fn error_handler(error: poise::FrameworkError<'_, Data, Error>) {
 
 ## Create and configure framework
 
-```rust
+```rust,no-run
 # use std::sync::Arc;
 # type Error = Box<dyn std::error::Error + Send + Sync>;
 # type Context<'a> = poise::Context<'a, (), Error>;
@@ -220,6 +220,7 @@ async fn error_handler(error: poise::FrameworkError<'_, Data, Error>) {
 # #[poise::command(prefix_command)] async fn command2(ctx: Context<'_>) -> Result<(), Error> { Ok(()) }
 # #[poise::command(prefix_command)] async fn command3(ctx: Context<'_>) -> Result<(), Error> { Ok(()) }
 use poise::serenity_prelude as serenity;
+use serenity::all::Token;
 
 # async {
 // Use `Framework::builder()` to create a framework builder and supply basic data to the framework:
@@ -249,7 +250,7 @@ let framework = poise::Framework::builder()
         ..Default::default()
     }).build();
 
-let client = serenity::ClientBuilder::new("...", serenity::GatewayIntents::non_privileged())
+let client = serenity::ClientBuilder::new(Token::from_env("TOKEN").expect("NO TOKEN"), serenity::GatewayIntents::non_privileged())
     .framework(framework).await;
 
 client.unwrap().start().await.unwrap();

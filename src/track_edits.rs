@@ -5,44 +5,38 @@ use crate::serenity_prelude as serenity;
 
 /// Updates the given message according to the update event
 fn update_message(message: &mut serenity::Message, update: serenity::MessageUpdateEvent) {
-    message.id = update.id;
-    message.channel_id = update.channel_id;
-    message.guild_id = update.guild_id;
+    message.id = update.message.id;
+    message.channel_id = update.message.channel_id;
+    message.guild_id = update.message.guild_id;
 
-    if let Some(kind) = update.kind {
-        message.kind = kind;
-    }
-    if let Some(content) = update.content {
-        message.content = content;
-    }
-    if let Some(tts) = update.tts {
-        message.set_tts(tts);
-    }
-    if let Some(pinned) = update.pinned {
-        message.set_pinned(pinned);
-    }
-    if let Some(timestamp) = update.timestamp {
-        message.timestamp = timestamp;
-    }
-    if let Some(edited_timestamp) = update.edited_timestamp {
+    let kind = update.message.kind;
+    message.kind = kind;
+    let content= update.message.content.clone();
+    message.content = content;
+    let tts = update.message.tts();
+    message.set_tts(tts);
+    let pinned = update.message.pinned();
+    message.set_pinned(pinned);
+    let timestamp = update.message.timestamp;
+    message.timestamp = timestamp;
+    if let Some(edited_timestamp) = update.message.edited_timestamp {
         message.edited_timestamp = Some(edited_timestamp);
     }
-    if let Some(author) = update.author {
-        message.author = author;
-    }
-    if let Some(mention_everyone) = update.mention_everyone {
-        message.set_mention_everyone(mention_everyone);
-    }
-    if let Some(mentions) = update.mentions {
-        message.mentions = mentions;
-    }
-    if let Some(mention_roles) = update.mention_roles {
+    let author = update.message.author.clone();
+    message.author = author;
+    let mention_everyone= update.message.mention_everyone();
+    message.set_mention_everyone(mention_everyone);
+    let mentions = update.message.mentions;
+    message.mentions = mentions;
+    if !update.message.mention_roles.is_empty() {
+        let mention_roles = update
+            .message
+            .mention_roles;
         message.mention_roles = mention_roles;
     }
-    if let Some(attachments) = update.attachments {
-        message.attachments = attachments;
-    }
-    // if let Some(embeds) = update.embeds {
+    let attachments = update.message.attachments;
+    message.attachments = attachments;
+    // if let Some(embeds) = update.message.embeds {
     //     message.embeds = embeds;
     // }
 }
@@ -94,7 +88,7 @@ impl EditTracker {
         match self
             .cache
             .iter_mut()
-            .find(|invocation| invocation.user_msg.id == user_msg_update.id)
+            .find(|invocation| invocation.user_msg.id == user_msg_update.message.id)
         {
             Some(invocation) => {
                 if ignore_edits_if_not_yet_responded && invocation.bot_response.is_none() {
@@ -106,7 +100,7 @@ impl EditTracker {
                 // re-run the command in that case too; because that means the user explicitly
                 // edited their message
                 #[allow(clippy::question_mark)]
-                if user_msg_update.content.is_none() {
+                if user_msg_update.message.content.is_empty() {
                     return None;
                 }
 
@@ -147,7 +141,7 @@ impl EditTracker {
     pub fn purge(&mut self) {
         let max_duration = self.max_duration;
         self.cache.retain(|invocation| {
-            let last_update = invocation
+            let last_update= invocation
                 .user_msg
                 .edited_timestamp
                 .unwrap_or(invocation.user_msg.timestamp);
